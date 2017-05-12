@@ -56,12 +56,15 @@ def get_inside(url):
     #print(req.urlopen(url, data).read())
 
 def start():
-    get_inside('/en/')
-    #url = '?v=javlikic6e'
-    #url = '?v=javlikjgqu'
-    #pydoc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/' + url)
-    #doc = Document(pydoc, url)
-    #doc.start_parse()
+    if False:
+        #url = '?v=javlikic6e'
+        #url = '?v=javlikjgqu' # title encoding error
+        url = '?v=javlikit2y' # director encodeing error
+        pydoc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/' + url)
+        doc = Document(pydoc, url)
+        doc.start_parse()
+    else:
+        get_inside('/en/')
 
 def get_sub_uri(url):
     if url[:2] == './':

@@ -80,7 +80,8 @@ class Document:
         content_area = doc('#rightcolumn')
 
         #title
-        title = content_area('#video_title').text().encode('utf-8')
+        #title = content_area('#video_title').text().encode('utf-8')
+        title = content_area('#video_title').text()
         print('title is:', title)
 
         jacket_info = content_area('#video_jacket_info')
