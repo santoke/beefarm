@@ -3,18 +3,19 @@ import threading
 import urllib.request as req
 from urllib.parse import urlencode
 from pyquery import PyQuery as pq
+from models.video import Video
 
 valid_domain = 'www.javlibrary.com'
 current_url = ''
 touched_url = {}
 
-db = MySQLdb.connect(host="45.77.19.179", user="root", passwd="rntekrrntekr1!", port=4306)
-cursor = db.cursor()
+#examples
+#db = MySQLdb.connect(host="45.77.19.179", user="root", passwd="rntekrrntekr1!", port=4306)
+#cursor = db.cursor()
 #cursor.execute("INSERT INTO VALUES")
-
 #cursor.execute("SELECT BLAH BLAH")
 #cursor.fetchone()
-db.close()
+#db.close()
 
 def get_inside(url):
     if url in touched_url:
@@ -28,7 +29,7 @@ def get_inside(url):
     #doc = req.urlopen('http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic').read()
     #doc = pq(url='http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic')
     try:
-        doc = pq(url='http://45.77.19.179:1337/?url=http://' + valid_domain + url)
+        doc = pq(url='http://45.77.19.179:1337/?url=http://' + valid_domain + get_sub_uri(url))
         if url[:6] == '?v=jav':
             parse_doc(doc)
     except:
@@ -39,7 +40,7 @@ def get_inside(url):
         url = pq(a_element).attr('href')
         is_valid_url = check_valid_url(url)
         if is_valid_url:
-            get_inside(strip_url(url))
+            get_inside(get_sub_uri(url))
 
     ##POST
     #url = 'http://was.smartcrm.kr/SmartCRM/webservice/xml_hosp.asp'
@@ -83,14 +84,17 @@ def parse_doc(doc):
 
 def func(*args):
     #get_inside('/en/')
-    doc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/?v=javlikic6e')
-    parse_doc(doc)
+    #get_inside('/en/#help_topic1')
+    #doc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/?v=javlikic6e')
+    #doc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/?v=javliki22u')
+    #parse_doc(doc)
+    print("what the?")
 
 thread = threading.Thread(target=func, args=(1, 2))
 thread.start()
 #thread.join()
 
-def strip_url(url):
+def get_sub_uri(url):
     if url[:2] == './':
         return url[2:]
 
