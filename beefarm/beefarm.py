@@ -1,3 +1,4 @@
+import MySQLdb
 import threading
 import urllib.request as req
 from urllib.parse import urlencode
@@ -6,6 +7,14 @@ from pyquery import PyQuery as pq
 valid_domain = 'www.javlibrary.com'
 current_url = ''
 touched_url = {}
+
+db = MySQLdb.connect(host="45.77.19.179", user="root", passwd="rntekrrntekr1!", port=4306)
+cursor = db.cursor()
+#cursor.execute("INSERT INTO VALUES")
+
+#cursor.execute("SELECT BLAH BLAH")
+#cursor.fetchone()
+db.close()
 
 def get_inside(url):
     if url in touched_url:
@@ -36,7 +45,8 @@ def get_inside(url):
     #print(req.urlopen(url, data).read())
 
 def func(*args):
-    get_inside('/en/')
+    #get_inside('/en/')
+    print("fdfdf")
 
 thread = threading.Thread(target=func, args=(1, 2))
 thread.start()
