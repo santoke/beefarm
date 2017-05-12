@@ -1,21 +1,29 @@
-import MySQLdb
 import threading
 import urllib.request as req
 from urllib.parse import urlencode
 from pyquery import PyQuery as pq
+from database import db_session
 from models.video import Video
 
 valid_domain = 'www.javlibrary.com'
 current_url = ''
 touched_url = {}
 
-#examples
-#db = MySQLdb.connect(host="45.77.19.179", user="root", passwd="rntekrrntekr1!", port=4306)
-#cursor = db.cursor()
-#cursor.execute("INSERT INTO VALUES")
-#cursor.execute("SELECT BLAH BLAH")
-#cursor.fetchone()
-#db.close()
+# SELECT
+#queries = db_session.query(Video)
+#entries = [dict(id='TESTD1111', length=100) for q in queries]
+#print(entries)
+#video = db_session.query(Video).filter_by(id='TESTD1111').first()
+
+#UPDATE
+#video = db_session.query(Video).filter_by(id='TESTD1111').first()
+#video.subject = 'edited subject2222'
+#db_session.commit()
+
+# INSERT
+#v = Video('TESTD1111', 'wowowo..', '2017-07-12', 100)
+#db_session.add(v)
+#db_session.commit()
 
 def get_inside(url):
     if url in touched_url:
@@ -70,25 +78,26 @@ def parse_doc(doc):
     jacket_info = content_area('#video_jacket_info')
     print('video id is:', jacket_info('#video_id').text())
     print('jacket image url:', jacket_info('#video_jacket_img').attr('src'))
+    req.urlretrieve(jacket_info('#video_jacket_img').attr('src'), "local-filename.jpg")
     print('release date:', jacket_info('#video_date').find('text').text())
     print('video_length:', jacket_info('#video_length').find('.text').text())
-    print('director:', jacket_info('#video_director').find('.director').text())
-    print('maker:', jacket_info('#video_maker').find('.maker').text())
-    print('label:', jacket_info('#video_label').find('.label').text())
+    print('director:', jacket_info('#video_director').find('.director').attr('id'), jacket_info('#video_director').find('.director').text())
+    print('maker:', jacket_info('#video_maker').find('.maker').attr('id'), jacket_info('#video_maker').find('.maker').text())
+    print('label:', jacket_info('#video_label').find('.label').attr('id'), jacket_info('#video_label').find('.label').text())
     print('genres')
     jacket_info('#video_genres').find('.genre').each(list_genres)
     print('cast')
     jacket_info('#video_cast').find('.cast').each(list_cast)
-    print('comments')
-    content_area('#video_comments').find('.comment').each(list_comment)
+    #print('comments')
+    #content_area('#video_comments').find('.comment').each(list_comment)
 
 def func(*args):
     #get_inside('/en/')
     #get_inside('/en/#help_topic1')
     #doc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/?v=javlikic6e')
-    #doc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/?v=javliki22u')
-    #parse_doc(doc)
-    print("what the?")
+    doc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/?v=javliki22u')
+    parse_doc(doc)
+    #print("what the?")
 
 thread = threading.Thread(target=func, args=(1, 2))
 thread.start()
