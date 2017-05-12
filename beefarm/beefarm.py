@@ -36,43 +36,32 @@ def get_inside(url):
     #doc = req.urlopen('http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic').read()
     #doc = pq(url='http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic')
     try:
-        doc = pq(url='http://45.77.19.179:1337/?url=http://' + valid_domain + get_sub_uri(url))
+        pydoc = pq(url='http://45.77.19.179:1337/?url=http://' + valid_domain + get_sub_uri(url))
         if url[:6] == '?v=jav':
-            #thread = threading.Thread(target=parse_doc, doc=doc)
-            #thread.start()
-            print("hehehehe")
+            doc = Document(pydoc, url)
+            doc.start_parse()
     except:
         print("Get URL Error:", url)
         return
 
-    for a_element in doc('a'):
+    for a_element in pydoc('a'):
         url = pq(a_element).attr('href')
         is_valid_url = check_valid_url(url)
         if is_valid_url:
             get_inside(get_sub_uri(url))
 
-    ##POST
+    ##POST EXAMPLE
     #url = 'http://was.smartcrm.kr/SmartCRM/webservice/xml_hosp.asp'
     #data = urlencode({ "chksum" : "23f07fae59a1a1eb160b145521269207" }).encode()
     #print(req.urlopen(url, data).read())
 
 def start():
-    #get_inside('/en/')
-    #get_inside('/en/#help_topic1')
-    #doc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/?v=javlikic6e')
-    pydoc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/?v=javlikidyi')
-    #thread = threading.Thread(target=parse_doc, args=(doc, 2))
-    #thread.start()
-    #print("what the?")
-    doc = Document(pydoc)
-    doc.start_parse()
-
-#def func(*args):
-#    parse_doc(args[0])
-
-#thread = threading.Thread(target=func, args=(1, 2))
-#thread.start()
-#thread.join()
+    get_inside('/en/')
+    #url = '?v=javlikic6e'
+    #url = '?v=javlikjgqu'
+    #pydoc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/' + url)
+    #doc = Document(pydoc, url)
+    #doc.start_parse()
 
 def get_sub_uri(url):
     if url[:2] == './':

@@ -14,9 +14,11 @@ from models.video_genre import VideoGenre
 
 class Document:
     video_id = ''
+    site_url = ''
 
-    def __init__(self, pydoc):
+    def __init__(self, pydoc, site_url):
         self.pydoc = pydoc
+        self.site_url = site_url
 
     def start_parse(self):
         thread = threading.Thread(target=self.parse_doc, args=(1, 1))
@@ -30,18 +32,18 @@ class Document:
         video_genre = self.create_relation_record('video_genre', genre.id)
         print(code, name, video_genre.id)
 
-    def list_cast(index, node):
+    def iter_actor(self, index, node):
         d = pq(node)
-        id = d.attr('id')
+        code = d.attr('id')
         name = d.find('.star').text()
         alias = d.find('.alias').text()
-        print(id, name, alias)
-
-    def list_comment(index, node):
-        d = pq(node)
-        id = d.attr('id')
-        print(id)
-        #print(d('.t').html().split('[img]'))
+        actor = db_session.query(Actor).filter_by(code=code).first()
+        if actor == None:
+            actor = Actor(code, name, alias)
+            db_session.add(actor)
+            db_session.commit()
+        video_actor = self.create_relation_record('video_actor', actor.id)
+        print(code, name, alias, video_actor.id)
 
     def get_id_and_name(self, element):
         code = element.attr('id')
@@ -64,7 +66,7 @@ class Document:
             class_name = class_name + s.title()
             last_word = s
         ModelClass = getattr(importlib.import_module("models." + file_name), class_name)
-        record = db_session.query(ModelClass).filter_by(**{'video_id':self.video_id, 'genre_id':item_id}).first()
+        record = db_session.query(ModelClass).filter_by(**{'video_id':self.video_id, last_word + '_id':item_id}).first()
         if record == None:
             record = ModelClass(self.video_id, item_id)
             db_session.add(record)
@@ -77,7 +79,8 @@ class Document:
         doc = self.pydoc
         content_area = doc('#rightcolumn')
 
-        title = content_area('#video_title').text()
+        #title
+        title = content_area('#video_title').text().encode('utf-8')
         print('title is:', title)
 
         jacket_info = content_area('#video_jacket_info')
@@ -91,7 +94,10 @@ class Document:
         cover_url = jacket_info('#video_jacket_img').attr('src')
         print('jacket image url:', cover_url)
         if cover_url is not None:
-            req.urlretrieve(jacket_info('#video_jacket_img').attr('src'), "covers/" + video_id + "." + (cover_url.split(".")[-1:][0]))
+            try:
+                req.urlretrieve(jacket_info('#video_jacket_img').attr('src'), "covers/" + video_id + "." + (cover_url.split(".")[-1:][0]))
+            except:
+                print("cover download error")
 
         #release date
         release_date = jacket_info('#video_date').find('.text').text()
@@ -104,7 +110,7 @@ class Document:
         video = db_session.query(Video).filter_by(id=video_id).first()
 
         if video == None:
-            video = Video(video_id, title, cover_url, release_date, video_length)
+            video = Video(video_id, self.site_url, title, cover_url, release_date, video_length)
             has_video_record = False
         else:
             has_video_record = True
@@ -133,7 +139,5 @@ class Document:
         jacket_info('#video_genres').find('.genre').each(self.iter_genres)
 
         #actors
-        #print('cast')
-        #jacket_info('#video_cast').find('.cast').each(list_cast)
-        #print('comments')
-        #content_area('#video_comments').find('.comment').each(list_comment)
+        print('actor')
+        jacket_info('#video_cast').find('.cast').each(self.iter_actor)

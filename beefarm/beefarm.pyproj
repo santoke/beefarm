@@ -47,6 +47,9 @@
     <Compile Include="models\video.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="models\video_actor.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="models\video_genre.py">
       <SubType>Code</SubType>
     </Compile>
