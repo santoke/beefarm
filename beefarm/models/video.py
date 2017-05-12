@@ -6,12 +6,18 @@ class Video(Base):
 
     id = Column(CHAR(12), primary_key=True)
     subject = Column(String(255))
+    image = Column(String(255))
     release_date = Column(String(255))
     length = Column(Integer)
 
-    def __init__(self, id, subject, release_date, length):
+    director_id = Column(Integer)
+    maker_id = Column(Integer)
+    label_id = Column(Integer)
+
+    def __init__(self, id, subject, image, release_date, length):
         self.id = id
         self.subject = subject
+        self.image = image
         self.release_date = release_date
         self.length = length
 
