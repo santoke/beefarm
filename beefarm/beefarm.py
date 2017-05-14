@@ -24,11 +24,11 @@ touched_url = {}
 #db_session.commit()
 #print("v id is:", v.id)
 
-def get_inside(url):
+def get_links(url, referer, use_reflextion=True):
     if url in touched_url:
         return
 
-    print("do touch:", url)
+    print("do touch:", referer, " from to :", url)
 
     current_url = url
     touched_url[url] = 1
@@ -45,10 +45,12 @@ def get_inside(url):
         return
 
     for a_element in pydoc('a'):
-        url = pq(a_element).attr('href')
-        is_valid_url = check_valid_url(url)
-        if is_valid_url:
-            get_inside(get_sub_uri(url))
+        a_url = pq(a_element).attr('href')
+        if use_reflextion == False:
+            print(a_url)
+        is_valid_url = check_valid_url(a_url)
+        if is_valid_url and use_reflextion:
+            get_links(get_sub_uri(a_url), url)
 
     ##POST EXAMPLE
     #url = 'http://was.smartcrm.kr/SmartCRM/webservice/xml_hosp.asp'
@@ -64,7 +66,7 @@ def start():
         doc = Document(pydoc, url)
         doc.start_parse()
     else:
-        get_inside('/en/')
+        get_links('/en/vl_newrelease.php', '', True)
 
 def get_sub_uri(url):
     if url[:2] == './':
