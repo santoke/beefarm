@@ -28,7 +28,7 @@ def get_links(url, referer, use_reflextion=True):
     if url in touched_url:
         return
 
-    print("do touch:", referer, " from to :", url)
+    print("do touch refer:", referer, ", to :", url)
 
     current_url = url
     touched_url[url] = 1
@@ -36,12 +36,13 @@ def get_links(url, referer, use_reflextion=True):
     #doc = req.urlopen('http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic').read()
     #doc = pq(url='http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic')
     try:
-        pydoc = pq(url='http://45.77.19.179:1337/?url=http://' + valid_domain + get_sub_uri(url))
+        pydoc = pq(url='http://' + valid_domain + get_sub_uri(url))
+        print(pydoc)
         if url[:6] == '?v=jav':
             doc = Document(pydoc, url)
             doc.start_parse()
-    except:
-        print("Get URL Error:", url)
+    except Exception as ex:
+        print("Get URL Error:", url, ex)
         return
 
     for a_element in pydoc('a'):
@@ -50,7 +51,7 @@ def get_links(url, referer, use_reflextion=True):
             print(a_url)
         is_valid_url = check_valid_url(a_url)
         if is_valid_url and use_reflextion:
-            get_links(get_sub_uri(a_url), url)
+            get_links(get_sub_uri(a_url), a_url)
 
     ##POST EXAMPLE
     #url = 'http://was.smartcrm.kr/SmartCRM/webservice/xml_hosp.asp'
@@ -67,6 +68,7 @@ def start():
         doc.start_parse()
     else:
         get_links('/en/vl_newrelease.php', '', True)
+        #get_links('/en/vl_genre.php?list&mode=&g=ky&page=1', '', True)
 
 def get_sub_uri(url):
     if url[:2] == './':
