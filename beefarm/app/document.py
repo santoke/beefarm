@@ -18,6 +18,7 @@ class Document:
 
     def __init__(self, pydoc, site_url):
         self.pydoc = pydoc
+        self.video_id = ''
         self.site_url = site_url
 
     def start_parse(self):

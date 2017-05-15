@@ -26,6 +26,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="beefarm.py" />
+    <Compile Include="app\config.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="database.py">
       <SubType>Code</SubType>
     </Compile>
@@ -57,6 +60,10 @@
   <ItemGroup>
     <Folder Include="models\" />
     <Folder Include="app\" />
+    <Folder Include="config\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="config\config.json" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

@@ -2,27 +2,11 @@ import urllib.request as req
 from urllib.parse import urlencode
 from pyquery import PyQuery as pq
 from app.document import Document
+from app.config import Config
 
-valid_domain = 'www.javlibrary.com'
-current_url = ''
+Config()
+
 touched_url = {}
-
-# SELECT
-#queries = db_session.query(Video)
-#entries = [dict(id='TESTD1111', length=100) for q in queries]
-#print(entries)
-#video = db_session.query(Video).filter_by(id='TESTD1111').first()
-
-#UPDATE
-#video = db_session.query(Video).filter_by(id='TESTD1111').first()
-#video.subject = 'edited subject2222'
-#db_session.commit()
-
-# INSERT
-#v = Video('TESTD11112', 'wowowo..', 'http://ssss.sss.com', '2017-07-12', 100)
-#db_session.add(v)
-#db_session.commit()
-#print("v id is:", v.id)
 
 def get_links(url, referer, use_reflextion=True):
     if url in touched_url:
@@ -30,13 +14,10 @@ def get_links(url, referer, use_reflextion=True):
 
     print("do touch refer:", referer, ", to :", url)
 
-    current_url = url
     touched_url[url] = 1
-    ##GET
-    #doc = req.urlopen('http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic').read()
-    #doc = pq(url='http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic')
+
     try:
-        pydoc = pq(url='http://' + valid_domain + get_sub_uri(url))
+        pydoc = pq(url=Config.d['proxy'] + Config.d['domain'] + get_sub_uri(url))
         print(pydoc)
         if url[:6] == '?v=jav':
             doc = Document(pydoc, url)
@@ -53,6 +34,9 @@ def get_links(url, referer, use_reflextion=True):
         if is_valid_url and use_reflextion:
             get_links(get_sub_uri(a_url), a_url)
 
+    ##GET EXAMPLE
+    #doc = req.urlopen('http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic').read()
+
     ##POST EXAMPLE
     #url = 'http://was.smartcrm.kr/SmartCRM/webservice/xml_hosp.asp'
     #data = urlencode({ "chksum" : "23f07fae59a1a1eb160b145521269207" }).encode()
@@ -60,10 +44,8 @@ def get_links(url, referer, use_reflextion=True):
 
 def start():
     if False:
-        #url = '?v=javlikic6e'
-        #url = '?v=javlikjgqu' # title encoding error
-        url = '?v=javlikit2y' # director encodeing error
-        pydoc = pq(url='http://45.77.19.179:1337/?url=http://www.javlibrary.com/en/' + url)
+        url = '/en/?v=javlikic6e'
+        pydoc = pq(url=Config.d['proxy'] + Config.d['domain'] + url)
         doc = Document(pydoc, url)
         doc.start_parse()
     else:
@@ -86,9 +68,6 @@ def check_valid_url(url):
     if url.find("http") != -1 or url.find('www.') != -1:
         return False
 
-    if url == current_url:
-        return False
-
     if url == './':
         return False
 
@@ -97,4 +76,5 @@ def check_valid_url(url):
 
     return True
 
-start()
+if __name__ == "__main__":
+    start()
