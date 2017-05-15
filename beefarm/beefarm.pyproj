@@ -47,6 +47,9 @@
     <Compile Include="models\maker.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="models\url.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="models\video.py">
       <SubType>Code</SubType>
     </Compile>

@@ -1,25 +1,31 @@
 import urllib.request as req
+import redis
 from urllib.parse import urlencode
 from pyquery import PyQuery as pq
 from app.document import Document
 from app.config import Config
+from database import db_session
+from models.url import Url
 
 Config()
-
-touched_url = {}
+redis = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 def get_links(url, referer, use_reflextion=True):
-    if url in touched_url:
+    if use_reflextion and redis.get(url) != None:
         return
 
     print("do touch refer:", referer, ", to :", url)
 
-    touched_url[url] = 1
+    if use_reflextion:
+        redis.set(url, 1)
+        if db_session.query(Url).filter_by(url=url).first() == None:
+            db_session.add(Url(url))
+            db_session.commit()
 
     try:
         pydoc = pq(url=Config.d['proxy'] + Config.d['domain'] + get_sub_uri(url))
-        print(pydoc)
-        if url[:6] == '?v=jav':
+        # get documents
+        if url[:6] == '?v=jav' and False:
             doc = Document(pydoc, url)
             doc.start_parse()
     except Exception as ex:
@@ -30,9 +36,10 @@ def get_links(url, referer, use_reflextion=True):
         a_url = pq(a_element).attr('href')
         if use_reflextion == False:
             print(a_url)
+        print(a_url)
         is_valid_url = check_valid_url(a_url)
         if is_valid_url and use_reflextion:
-            get_links(get_sub_uri(a_url), a_url)
+            get_links(get_sub_uri(a_url), url, True)
 
     ##GET EXAMPLE
     #doc = req.urlopen('http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic').read()
@@ -50,7 +57,7 @@ def start():
         doc.start_parse()
     else:
         get_links('/en/vl_newrelease.php', '', True)
-        #get_links('/en/vl_genre.php?list&mode=&g=ky&page=1', '', True)
+        #get_links('/en/vl_genre.php?list&mode=&g=ky&page=1', '', True) # error when get with proxy
 
 def get_sub_uri(url):
     if url[:2] == './':

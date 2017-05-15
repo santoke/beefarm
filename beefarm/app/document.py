@@ -2,6 +2,7 @@ import urllib.request as req
 import threading
 import importlib
 
+from app.config import Config
 from pyquery import PyQuery as pq
 from database import db_session
 from models.video import Video
@@ -95,7 +96,7 @@ class Document:
         #image download
         cover_url = jacket_info('#video_jacket_img').attr('src')
         print('jacket image url:', cover_url)
-        if cover_url is not None:
+        if (cover_url is not None) and Config.d['download_cover']:
             try:
                 req.urlretrieve(jacket_info('#video_jacket_img').attr('src'), "covers/" + video_id + "." + (cover_url.split(".")[-1:][0]))
             except:
