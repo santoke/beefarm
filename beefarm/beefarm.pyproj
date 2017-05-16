@@ -38,6 +38,9 @@
     <Compile Include="models\director.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="models\error_url.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="models\genre.py">
       <SubType>Code</SubType>
     </Compile>

@@ -1,14 +1,19 @@
 import urllib.request as req
 import redis
+import threading
 from urllib.parse import urlencode
 from pyquery import PyQuery as pq
 from app.document import Document
 from app.config import Config
 from database import db_session
 from models.url import Url
+from models.error_url import ErrorUrl
 
 Config()
 redis = redis.StrictRedis(host='localhost', port=6379, db=0)
+
+def start_get_link_thread(*args):
+    get_links(args[0], args[1], True)
 
 def get_links(url, referer, use_reflextion=True):
     if use_reflextion and redis.get(url) != None:
@@ -29,6 +34,9 @@ def get_links(url, referer, use_reflextion=True):
             doc = Document(pydoc, url)
             doc.start_parse()
     except Exception as ex:
+        if db_session.query(ErrorUrl).filter_by(url=url).first() == None:
+            db_session.add(ErrorUrl(url))
+            db_session.commit()
         print("Get URL Error:", url, ex)
         return
 
@@ -39,7 +47,10 @@ def get_links(url, referer, use_reflextion=True):
         print(a_url)
         is_valid_url = check_valid_url(a_url)
         if is_valid_url and use_reflextion:
-            get_links(get_sub_uri(a_url), url, True)
+            # todo : must be used thread pool
+            thread = threading.Thread(target=start_get_link_thread, args=(a_url, url))
+            thread.start()
+            #get_links(get_sub_uri(a_url), url, True)
 
     ##GET EXAMPLE
     #doc = req.urlopen('http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic').read()
