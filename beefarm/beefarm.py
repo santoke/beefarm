@@ -1,6 +1,7 @@
 import urllib.request as req
 import redis
 import threading
+import time
 from urllib.parse import urlencode
 from pyquery import PyQuery as pq
 from app.document import Document
@@ -15,11 +16,14 @@ redis = redis.StrictRedis(host='localhost', port=6379, db=0)
 def start_get_link_thread(*args):
     get_links(args[0], args[1], True)
 
-def get_links(url, referer, use_reflextion=True):
-    if use_reflextion and redis.get(url) != None:
+def get_links(url, referer, use_reflextion, depth=1):
+    print("do touch refer:", referer, ", to :", url, "depth:", depth)
+
+    if depth == 10:
         return
 
-    print("do touch refer:", referer, ", to :", url)
+    if use_reflextion and redis.get(url) != None:
+        return
 
     if use_reflextion:
         redis.set(url, 1)
@@ -47,10 +51,9 @@ def get_links(url, referer, use_reflextion=True):
         print(a_url)
         is_valid_url = check_valid_url(a_url)
         if is_valid_url and use_reflextion:
-            # todo : must be used thread pool
-            thread = threading.Thread(target=start_get_link_thread, args=(a_url, url))
-            thread.start()
-            #get_links(get_sub_uri(a_url), url, True)
+            #thread = threading.Thread(target=start_get_link_thread, args=(a_url, url))
+            #thread.start()
+            get_links(get_sub_uri(a_url), url, True, depth+1)
 
     ##GET EXAMPLE
     #doc = req.urlopen('http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic').read()
