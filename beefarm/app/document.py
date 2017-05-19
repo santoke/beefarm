@@ -98,7 +98,7 @@ class Document:
         print('jacket image url:', cover_url)
         if (cover_url is not None) and Config.d['download_cover']:
             try:
-                req.urlretrieve(jacket_info('#video_jacket_img').attr('src'), "covers/" + video_id + "." + (cover_url.split(".")[-1:][0]))
+                req.urlretrieve(jacket_info('#video_jacket_img').attr('src').replace("http", "https"), "covers/" + video_id + "." + (cover_url.split(".")[-1:][0]))
             except:
                 print("cover download error")
 
