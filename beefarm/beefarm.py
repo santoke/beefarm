@@ -12,7 +12,7 @@ from models.error_url import ErrorUrl
 
 Config()
 redis = redis.StrictRedis(host='localhost', port=6379, db=0)
-redis.flushdb()
+#redis.flushdb()
 last_touch_url = '';
 
 def log_site_url(url):
@@ -87,6 +87,7 @@ def get_video_list_links(list_url):
 def get_video_from_list(list_document):
     for video_element in list_document('.videos').find('.video'):
         url = get_sub_uri(pq(video_element).find('a').attr('href'))
+        redis.set('last_url', url)
         if redis.get(url) != None: # 이미 해당 세션에서 방문한 적이 있음
             continue
         pydoc = get_pydoc(url)
