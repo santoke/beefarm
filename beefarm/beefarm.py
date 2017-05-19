@@ -76,12 +76,16 @@ def get_video_list_links(list_url):
     pydoc = get_pydoc(list_url)
     arr_href = pydoc.find('.page.last').attr('href').split('=')
     last_page = int(arr_href[-1])
-    get_video_from_list(pydoc)
-    for i in range(2, last_page):
+    for i in reversed(range(2, last_page + 1)):
         url = '='.join(arr_href[0:-1]) + '=' + str(i)
+        if redis.get("complete_video_list:" + url) != None:  # 완료된 리스트 페이지
+            print("======================complete list=================:", url)
+            continue
         pydoc = get_pydoc(url)
         if pydoc != None:
             get_video_from_list(pydoc)
+        redis.set("complete_video_list:" + url, 1);
+    get_video_from_list(pydoc)
 
 # 비디오 정보 상세
 def get_video_from_list(list_document):
