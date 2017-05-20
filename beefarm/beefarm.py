@@ -21,6 +21,12 @@ def log_site_url(url):
         db_session.add(Url(url))
         db_session.commit()
 
+def log_error_url(url):
+    if db_session.query(ErrorUrl).filter_by(url=url).first() == None:
+        db_session.add(ErrorUrl(url))
+        db_session.commit()
+    print("Get URL Error:", url)
+
 def get_pydoc(url):
     url = Config.d['proxy'] + Config.d['domain'] + get_sub_uri(url)
     print("to get pydoc:", url)
@@ -29,9 +35,7 @@ def get_pydoc(url):
         pydoc = pq(url=url)
     except Exception as ex:
         if db_session.query(ErrorUrl).filter_by(url=url).first() == None:
-            db_session.add(ErrorUrl(url))
-            db_session.commit()
-            print("Get URL Error:", url, ex)
+            log_error_url(url)
             return None
     return pydoc
 
@@ -74,7 +78,13 @@ def get_genre_list_page_links():
 # 샘플 url : vl_genre.php?g=da
 def get_video_list_links(list_url):
     pydoc = get_pydoc(list_url)
-    arr_href = pydoc.find('.page.last').attr('href').split('=')
+    attr = pydoc.find('.page.last').attr('href')
+    if attr != None:
+        arr_href = pydoc.find('.page.last').attr('href').split('=')
+    else:
+        log_error_url(list_url)
+        return
+
     last_page = int(arr_href[-1])
     for i in reversed(range(2, last_page + 1)):
         url = '='.join(arr_href[0:-1]) + '=' + str(i)
@@ -94,6 +104,7 @@ def get_video_from_list(list_document):
         redis.set('last_url', url)
         if redis.get(url) != None: # 이미 해당 세션에서 방문한 적이 있음
             continue
+        redis.set(url, 1)
         pydoc = get_pydoc(url)
         if pydoc != None:
             doc = Document(pydoc, url)

@@ -1,5 +1,5 @@
 {
   "domain": "",
   "proxy":  "http://45.77.19.179:1337",
-  "download_cover": true
+  "download_cover": false
 }
