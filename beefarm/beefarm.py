@@ -4,7 +4,7 @@ import threading
 import time
 from urllib.parse import urlencode
 from pyquery import PyQuery as pq
-#from app.document import Document
+from app.document import Document
 from app.config import Config
 from database import db_session
 from models.url import Url
@@ -66,11 +66,9 @@ def get_genre_list_page_links():
 
     genre_count = 0
     for hash_key in genre_url_hash:
-        #thread = threading.Thread(target=run_genre_url_iterater, args=(genre_url_hash[hash_key], 1))
-        #thread.start()
         for genre_url in genre_url_hash[hash_key]:
             genre_count = genre_count + 1
-            print(genre_url, genre_count)
+            print("$$$$$$$$$$===================", genre_url, "=======================$$$$$$$$$$$$$$", genre_count)
             get_video_list_links(genre_url)
     #print("total genre count:", genre_count)
 
@@ -78,6 +76,13 @@ def get_genre_list_page_links():
 # 샘플 url : vl_genre.php?g=da
 def get_video_list_links(list_url):
     pydoc = get_pydoc(list_url)
+    for i in range(1, 3):
+        if pydoc != None:
+            print("get url error to retry:", i)
+            break
+        else:
+            pydoc = get_pydoc(list_url)
+
     attr = pydoc.find('.page.last').attr('href')
     if attr != None:
         arr_href = pydoc.find('.page.last').attr('href').split('=')
@@ -124,9 +129,8 @@ def start():
         doc = Document(pydoc, url)
         doc.start_parse()
     else:
-        #get_genre_list_page_links();
-        #get_video_list_links('vl_genre.php?g=da');
-        get_genre_list_page_links()
+        #get_genre_list_page_links()
+        get_video_list_links('vl_genre.php?g=am')
 
 def get_sub_uri(url):
     if url[:2] == './':

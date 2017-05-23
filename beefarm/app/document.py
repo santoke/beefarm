@@ -1,6 +1,7 @@
 import urllib.request as req
 import threading
 import importlib
+import __main__
 
 from app.config import Config
 from pyquery import PyQuery as pq
@@ -12,7 +13,6 @@ from models.genre import Genre
 from models.label import Label
 from models.maker import Maker
 from models.video_genre import VideoGenre
-from beefarm import redis
 
 class Document:
     video_id = ''
@@ -146,4 +146,4 @@ class Document:
         print('actor')
         jacket_info('#video_cast').find('.cast').each(self.iter_actor)
 
-        redis.set(url, 1)
+        __main__.redis.set(self.site_url, 1)
