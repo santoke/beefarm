@@ -4,7 +4,7 @@ import threading
 import time
 from urllib.parse import urlencode
 from pyquery import PyQuery as pq
-from app.document import Document
+#from app.document import Document
 from app.config import Config
 from database import db_session
 from models.url import Url
@@ -104,58 +104,10 @@ def get_video_from_list(list_document):
         redis.set('last_url', url)
         if redis.get(url) != None: # 이미 해당 세션에서 방문한 적이 있음
             continue
-        redis.set(url, 1)
         pydoc = get_pydoc(url)
         if pydoc != None:
             doc = Document(pydoc, url)
             doc.start_parse()
-
-
-####
-def start_get_link_thread(*args):
-    get_links(args[0], args[1], True, args[2])
-
-def get_links(url, referer, use_reflextion, depth=1):
-    print("do touch refer:", referer, ", to :", url, "depth:", depth)
-    last_touch_url = url;
-
-    if depth == 5:
-        return
-
-    if use_reflextion and redis.get(url) != None:
-        return
-
-    if use_reflextion:
-        redis.set(url, 1)
-        if db_session.query(Url).filter_by(url=url).first() == None:
-            db_session.add(Url(url))
-            db_session.commit()
-        else:
-            if referer != '': # referr가 존재하고 이미 해당 DB를 읽은적이 있음
-                return
-    try:
-        pydoc = pq(url=Config.d['proxy'] + Config.d['domain'] + get_sub_uri(url))
-        # get documents
-        if url.find('?v=jav') != -1:
-            doc = Document(pydoc, url)
-            doc.start_parse()
-    except Exception as ex:
-        if db_session.query(ErrorUrl).filter_by(url=url).first() == None:
-            db_session.add(ErrorUrl(url))
-            db_session.commit()
-        print("Get URL Error:", url, ex)
-        return
-
-    for a_element in pydoc('a'):
-        a_url = pq(a_element).attr('href')
-        if use_reflextion == False:
-            print(a_url)
-        print(a_url)
-        is_valid_url = check_valid_url(a_url)
-        if is_valid_url and use_reflextion:
-            #thread = threading.Thread(target=start_get_link_thread, args=(a_url, url, depth + 1))
-            #thread.start()
-            get_links(get_sub_uri(a_url), url, True, depth+1)
 
     ##GET EXAMPLE
     #doc = req.urlopen('http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic').read()
@@ -172,8 +124,6 @@ def start():
         doc = Document(pydoc, url)
         doc.start_parse()
     else:
-        #get_links('/en/vl_newrelease.php', '', True)
-        #get_links('/en/vl_genre.php?list&mode=&g=ky&page=1', '', True) # error when get with proxy
         #get_genre_list_page_links();
         #get_video_list_links('vl_genre.php?g=da');
         get_genre_list_page_links()
