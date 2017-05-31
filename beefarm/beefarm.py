@@ -31,12 +31,12 @@ def get_pydoc(url):
     url = Config.d['proxy'] + Config.d['domain'] + get_sub_uri(url)
     print("to get pydoc:", url)
     log_site_url(url)
+    pydoc = None
     try:
         pydoc = pq(url=url)
     except Exception as ex:
         if db_session.query(ErrorUrl).filter_by(url=url).first() == None:
             log_error_url(url)
-            return None
     return pydoc
 
 # 장르 목록 순환 스레드
@@ -124,13 +124,13 @@ def get_video_from_list(list_document):
 
 def start():
     if False:
-        url = '/en/?v=javlikic6e'
+        url = '/en/?v=javliolh3a'
         pydoc = pq(url=Config.d['proxy'] + Config.d['domain'] + url)
         doc = Document(pydoc, url)
         doc.start_parse()
     else:
-        #get_genre_list_page_links()
-        get_video_list_links('vl_genre.php?g=am')
+        get_genre_list_page_links()
+        #get_video_list_links('vl_genre.php?g=am')
 
 def get_sub_uri(url):
     if url[:2] == './':

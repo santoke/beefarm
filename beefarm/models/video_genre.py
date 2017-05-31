@@ -4,9 +4,8 @@ from database import Base
 class VideoGenre(Base):
     __tablename__ = 'video_genres'
 
-    id = Column(Integer, primary_key=True)
-    video_id = Column(String(255))
-    genre_id = Column(Integer)
+    video_id = Column(String(255), primary_key=True)
+    genre_id = Column(Integer, primary_key=True)
 
     def __init__(self, video_id, genre_id):
         self.video_id = video_id

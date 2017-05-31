@@ -33,7 +33,7 @@ class Document:
         name = d.text()
         genre = self.create_item_record('genre', code, name)
         video_genre = self.create_relation_record('video_genre', genre.id)
-        print(code, name, video_genre.id)
+        print(code, name)
 
     def iter_actor(self, index, node):
         d = pq(node)
