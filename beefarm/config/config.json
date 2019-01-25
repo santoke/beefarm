@@ -6,5 +6,10 @@
     "port": 6379,
     "db": 0
   },
+  "database": {
+    "address": "",
+    "port": 0,
+    "db":  ""
+  },
   "download_cover": false
 }
