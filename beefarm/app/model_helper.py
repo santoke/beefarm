@@ -6,6 +6,7 @@ import __main__
 from app.config import Config
 from pyquery import PyQuery as pq
 from database import db_session
+
 from models.video import Video
 from models.actor import Actor
 from models.director import Director
@@ -14,7 +15,8 @@ from models.label import Label
 from models.maker import Maker
 from models.video_genre import VideoGenre
 
-class Document:
+# Model
+class ModelHelper:
     video_id = ''
     site_url = ''
 

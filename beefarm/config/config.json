@@ -1,5 +1,10 @@
 {
   "domain": "",
-  "proxy":  "http://45.77.19.179:1337",
+  "proxy": "http://45.77.19.179:1337",
+  "redis": {
+    "address": "",
+    "port": 6379,
+    "db": 0
+  },
   "download_cover": false
 }

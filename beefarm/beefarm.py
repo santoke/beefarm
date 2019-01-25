@@ -4,15 +4,14 @@ import threading
 import time
 from urllib.parse import urlencode
 from pyquery import PyQuery as pq
-from app.document import Document
+from app.model_helper import ModelHelper
 from app.config import Config
 from database import db_session
 from models.url import Url
 from models.error_url import ErrorUrl
 
 Config()
-redis = redis.StrictRedis(host='localhost', port=6379, db=0)
-#redis.flushdb()
+redis = redis.StrictRedis(host=Config.d['redis']['addr'], port=Config.d['redis']['addr'], db=Config.d['redis']['db'])
 last_touch_url = '';
 
 def log_site_url(url):
@@ -111,11 +110,8 @@ def get_video_from_list(list_document):
             continue
         pydoc = get_pydoc(url)
         if pydoc != None:
-            doc = Document(pydoc, url)
+            doc = ModelHelper(pydoc, url)
             doc.start_parse()
-
-    ##GET EXAMPLE
-    #doc = req.urlopen('http://45.77.19.179:1337/?url=http://www.goodoc.co.kr/events/5883?funnel=organic').read()
 
     ##POST EXAMPLE
     #url = 'http://was.smartcrm.kr/SmartCRM/webservice/xml_hosp.asp'
@@ -126,7 +122,7 @@ def start():
     if False:
         url = '/en/?v=javliolh3a'
         pydoc = pq(url=Config.d['proxy'] + Config.d['domain'] + url)
-        doc = Document(pydoc, url)
+        doc = ModelHelper(pydoc, url)
         doc.start_parse()
     else:
         get_genre_list_page_links()
