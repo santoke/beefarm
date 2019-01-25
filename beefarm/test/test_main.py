@@ -1,4 +1,3 @@
-from test.uri_helper_test import URIHelperTest
 import unittest
 from app.config import Config
 
