@@ -2,6 +2,9 @@ import urllib.request as req
 import redis
 import threading
 import time
+
+from test.test_main import TestMain
+
 from urllib.parse import urlencode
 from pyquery import PyQuery as pq
 from app.model_helper import ModelHelper
@@ -11,7 +14,7 @@ from models.url import Url
 from models.error_url import ErrorUrl
 
 Config()
-redis = redis.StrictRedis(host=Config.d['redis']['addr'], port=Config.d['redis']['addr'], db=Config.d['redis']['db'])
+redis = redis.StrictRedis(host=Config.d['redis']['address'], port=Config.d['redis']['port'], db=Config.d['redis']['db'])
 last_touch_url = '';
 
 def log_site_url(url):
@@ -25,18 +28,6 @@ def log_error_url(url):
         db_session.add(ErrorUrl(url))
         db_session.commit()
     print("Get URL Error:", url)
-
-def get_pydoc(url):
-    url = Config.d['proxy'] + Config.d['domain'] + get_sub_uri(url)
-    print("to get pydoc:", url)
-    log_site_url(url)
-    pydoc = None
-    try:
-        pydoc = pq(url=url)
-    except Exception as ex:
-        if db_session.query(ErrorUrl).filter_by(url=url).first() == None:
-            log_error_url(url)
-    return pydoc
 
 # 장르 목록 순환 스레드
 def run_genre_url_iterater(*args):
@@ -119,11 +110,13 @@ def get_video_from_list(list_document):
     #print(req.urlopen(url, data).read())
 
 def start():
-    if False:
-        url = '/en/?v=javliolh3a'
-        pydoc = pq(url=Config.d['proxy'] + Config.d['domain'] + url)
-        doc = ModelHelper(pydoc, url)
-        doc.start_parse()
+    if True: # 테스트 모듈로 진입할때
+        #url = '/en/?v=javliolh3a'
+        #pydoc = pq(url=Config.d['proxy'] + Config.d['domain'] + url)
+        #doc = ModelHelper(pydoc, url)
+        #doc.start_parse()
+        t = TestMain()
+        t.test_runs()
     else:
         get_genre_list_page_links()
         #get_video_list_links('vl_genre.php?g=am')
