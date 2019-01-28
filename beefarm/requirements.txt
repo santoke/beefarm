@@ -4,3 +4,5 @@ redis
 pyquery
 sqlalchemy
 mock
+pylint
+selenium
