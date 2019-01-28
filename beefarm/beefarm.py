@@ -1,6 +1,7 @@
 from test.test_main import TestMain
 from app.config import Config
 from app.document import Document
+import sys
 
 Config()
 
@@ -26,5 +27,7 @@ def start():
         d.iterate_paging(last_page)
 
 if __name__ == "__main__":
-    test()
-    #start()
+    if len(sys.argv) > 1 and sys.argv[1] == '0':
+        test()
+    else:
+        start()
