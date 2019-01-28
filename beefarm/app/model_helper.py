@@ -1,7 +1,6 @@
 import urllib.request as req
 import threading
 import importlib
-import __main__
 
 from app.config import Config
 from pyquery import PyQuery as pq
@@ -15,7 +14,6 @@ from models.label import Label
 from models.maker import Maker
 from models.video_genre import VideoGenre
 
-# Model
 class ModelHelper:
     video_id = ''
     site_url = ''

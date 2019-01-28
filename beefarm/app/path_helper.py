@@ -16,6 +16,22 @@ class PathHelper():
 
         return f'/{self.language}/' + url
 
+    #deprecated
+    def check_valid_url(url):
+        if url == None:
+            return False
+
+        if url.find("http") != -1 or url.find('www.') != -1:
+            return False
+
+        if url == './':
+            return False
+
+        if url == '.':
+            return False
+
+        return True
+
     # 프록시 URL이 있는 경우 proxy 주소를 조합한 주소를 전달
     def page_url(self, url):
-        return Config.d['proxy'] + Config.d['domain'] + self.make_sub_uri(url)
+        return Config.d['proxy'] + Config.d['domain'] + self.make_sub_path(url)
