@@ -8,7 +8,7 @@ class Document(object):
 
     def __init__(self):
         self.path_helper = PathHelper(Config.d['language'])
-        self.redis = redis.StrictRedis(host=Config.d['redis']['address'], port=Config.d['redis']['port'], db=Config.d['redis']['db'])
+        self.redis = redis.StrictRedis(host=Config.d['redis']['address'], port=Config.d['redis']['port'], db=Config.d['redis']['db'], password=Config.d['redis']['password'])
 
     def pydoc(self, url):
         url = self.path_helper.page_url(url)
@@ -50,7 +50,7 @@ class Document(object):
         return genre_urls
 
     # 장르별 페이징 번호 링크
-    def get_video_last_paging_links(self, genre_url):
+    def get_last_paging_links(self, genre_url):
         htmldoc = None
         for i in range(1, 3):
             htmldoc = self.pydoc(genre_url)
@@ -68,28 +68,26 @@ class Document(object):
             #log_error_url(list_url)
         return last_link
 
-    # 페이징 순회 (거꾸로)
-    def iterate_paging(self, last_link, cache_start_page=3):
-        arr_href = last_link.split('=')
+    # 페이징 순회 (거꾸로), todo: unittest
+    def iterate_paging(self, last_url, cache_page_start=3):
+        arr_href = last_url.split('=')
         last_page = int(arr_href[-1])
-        for i in reversed(range(2, last_page + 1)):
+        for i in reversed(range(1, last_page + 1)):
             url = '='.join(arr_href[0:-1]) + '=' + str(i)
             redis_key = f'complete_video_list:{url}'
-            if i >= cache_start_page and self.redis.get(redis_key) != None:  # 이미 완료된 리스트 페이지
+            if i >= cache_page_start and self.redis.get(redis_key) != None:  # 이미 완료된 리스트 페이지
                 print("======================cached list=================:", url)
                 continue
             htmldoc = self.pydoc(url)
             if htmldoc != None:
-                get_video_detail(htmldoc)
+                self.get_video_detail(htmldoc)
             self.redis.set(redis_key, 1);
-
-        get_video_detail(htmldoc)
-        print("$$$$$$$$$$===================", last_link, "=======================$$$$$$$$$$$$$$")
+        print("$$$$$$$$$$===================complete iterate genre pages=======================$$$$$$$$$$$$$$", '='.join(arr_href))
 
     # 비디오 상세 페이지
-    def get_video_detail(list_html):
+    def get_video_detail(self, list_html):
         for video_element in list_html('.videos').find('.video'):
-            url = get_sub_uri(pq(video_element).find('a').attr('href'))
+            url = self.path_helper.make_sub_path(pq(video_element).find('a').attr('href'))
             pydoc = self.pydoc(url)
             if pydoc != None:
                 print('need to insert')
