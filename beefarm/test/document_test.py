@@ -23,10 +23,10 @@ class DocumentTest(unittest.TestCase):
             self.assertEqual(url[0:len(check_string)], check_string)
 
     # 특정 장르의 마지막 페이징 번호
-    def test_get_last_paging_links(self):
+    def test_get_last_paging_link(self):
         genre_url = 'vl_genre.php?g=da'
         category = genre_url.split('=')[1]
-        last_page = self.document.get_last_paging_links(genre_url)
+        last_page = self.document.get_last_paging_link(genre_url)
         p = re.compile(f'vl_genre.php\?&mode=&g={category}&page=[0-9]')
         self.assertNotEquals(p.search(last_page), None)
 
@@ -49,6 +49,7 @@ class DocumentTest(unittest.TestCase):
             self.assertNotEquals(self.document.redis.get(redis_key), None)
 
     def test_get_video_detail(self):
+        # todo
         print('this is test video detail')
 
     # 비디오 상세 목업
