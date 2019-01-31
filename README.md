@@ -1,4 +1,4 @@
-파이썬 크롤러
+파이썬(3.6) 크롤러
 
 비디오 Rails 데이터 적재
 
@@ -24,11 +24,15 @@
   "download_cover": false
 }
 
-2. 테스트
+2. 패키지 설치
+
+pip install -r requirements.txt
+
+3. 테스트
 
 $ python test/test_main.py
 
-3. 실행
+4. 실행
 
 $ python beefarm.py
 
