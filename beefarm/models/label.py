@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
-from database import Base
+from database import ModelBase
 
-class Label(Base):
+class Label(ModelBase):
     __tablename__ = 'labels'
 
     id = Column(Integer, primary_key=True)

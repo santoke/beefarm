@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String
-from database import Base
+from database import ModelBase
 
-class Url(Base):
+class Url(ModelBase):
     __tablename__ = 'urls'
 
     url = Column(String(255), primary_key=True)

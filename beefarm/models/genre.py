@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
-from database import Base
+from database import ModelBase
 
-class Genre(Base):
+class Genre(ModelBase):
     __tablename__ = 'genres'
 
     id = Column(Integer, primary_key=True)

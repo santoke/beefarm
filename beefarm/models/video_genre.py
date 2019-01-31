@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
-from database import Base
+from database import ModelBase
 
-class VideoGenre(Base):
+class VideoGenre(ModelBase):
     __tablename__ = 'video_genres'
 
     video_id = Column(String(255), primary_key=True)

@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
-from database import Base
+from database import ModelBase
 
-class Maker(Base):
+class Maker(ModelBase):
     __tablename__ = 'makers'
 
     id = Column(Integer, primary_key=True)

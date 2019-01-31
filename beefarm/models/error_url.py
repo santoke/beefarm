@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String
-from database import Base
+from database import ModelBase
 
-class ErrorUrl(Base):
+class ErrorUrl(ModelBase):
     __tablename__ = 'error_urls'
 
     url = Column(String(255), primary_key=True)

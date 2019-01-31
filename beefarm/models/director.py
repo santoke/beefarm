@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
-from database import Base
+from database import ModelBase
 
-class Director(Base):
+class Director(ModelBase):
     __tablename__ = 'directors'
 
     id = Column(Integer, primary_key=True)

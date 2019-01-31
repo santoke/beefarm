@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String
-from database import Base
+from database import ModelBase
 
-class Actor(Base):
+class Actor(ModelBase):
     __tablename__ = 'actors'
 
     id = Column(Integer, primary_key=True)
