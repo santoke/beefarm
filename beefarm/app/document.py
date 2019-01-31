@@ -1,25 +1,11 @@
-import redis
-
-from app.path_helper import PathHelper
+from app.html_parser import HTMLParser
 from app.config import Config
 from pyquery import PyQuery as pq
 
-class Document(object):
+class Document(HTMLParser):
 
     def __init__(self):
-        self.path_helper = PathHelper(Config.d['language'])
-        self.redis = redis.StrictRedis(host=Config.d['redis']['address'], port=Config.d['redis']['port'], db=Config.d['redis']['db'], password=Config.d['redis']['password'])
-
-    def pydoc(self, url):
-        url = self.path_helper.page_url(url)
-
-        pydoc = None
-        try:
-            pydoc = pq(url=url)
-        except Exception as ex:
-            print('error get url', url, ex)
-
-        return pydoc
+        super().__init__()
 
     # 읽어올 장르별 페이지
     def get_genre_list_page_links(self):
@@ -50,7 +36,7 @@ class Document(object):
         return genre_urls
 
     # 장르별 페이징 번호 링크
-    def get_last_paging_links(self, genre_url):
+    def get_last_paging_link(self, genre_url):
         htmldoc = None
         for i in range(1, 3):
             htmldoc = self.pydoc(genre_url)
@@ -82,12 +68,12 @@ class Document(object):
             if htmldoc != None:
                 self.get_video_detail(htmldoc)
             self.redis.set(redis_key, 1);
-        print("$$$$$$$$$$===================complete iterate genre pages=======================$$$$$$$$$$$$$$", '='.join(arr_href))
 
     # 비디오 상세 페이지
     def get_video_detail(self, list_html):
         for video_element in list_html('.videos').find('.video'):
             url = self.path_helper.make_sub_path(pq(video_element).find('a').attr('href'))
+            print(url)
             pydoc = self.pydoc(url)
             if pydoc != None:
                 print('need to insert')
