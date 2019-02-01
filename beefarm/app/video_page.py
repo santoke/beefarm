@@ -1,6 +1,7 @@
 from app.html_parser import HTMLParser
 from app.config import Config
 from app.video_dao import VideoDAO
+from request import ullib as rq
 
 class VideoPage(HTMLParser):
     def __init__(self, url):
@@ -23,48 +24,44 @@ class VideoPage(HTMLParser):
         name = element.text()
         return code, name
 
-    def parse_doc(self):
-        has_video_record = False
-
+    def parse_data(self):
         title = self.content_area('#video_title').text()
         release_date = self.jacket_info('#video_date').find('.text').text()
         video_length = self.jacket_info('#video_length').find('.text').text()
+
+        video = self.dao.add_if_not_exist(self.vset_video_id)
+        vide.site_url = self.site_url
+        video.title = title
+        video.cover_url = cover_url
+        video.release_date = release_date
+        video.video_length = video_length
+
         print('title:', title, ',release:', release_date, ', video_length:', video_length)
 
-        video = db_session.query(Video).filter_by(id=self.video_id).first()
-        if video == None:
-            video = Video(self.video_id, self.site_url, title, cover_url, release_date, video_length)
-            has_video_record = False
-        else:
-            has_video_record = True
-
         #director
-        code, name = self.get_id_and_name(jacket_info('#video_director').find('.director'))
-        video.director_id = self.create_item_record('director', code, name).id
-        print('director:', code, name)
+        #code, name = self.get_id_and_name(jacket_info('#video_director').find('.director'))
+        #video.director_id = self.create_item_record('director', code, name).id
+        #print('director:', code, name)
 
         #maker
-        code, name = self.get_id_and_name(jacket_info('#video_maker').find('.maker'))
-        video.maker_id = self.create_item_record('maker', code, name).id
-        print('maker:', code, name)
+        #code, name = self.get_id_and_name(jacket_info('#video_maker').find('.maker'))
+        #video.maker_id = self.create_item_record('maker', code, name).id
+        #print('maker:', code, name)
 
         #label
-        code, name = self.get_id_and_name(jacket_info('#video_label').find('.label'))
-        video.label_id = self.create_item_record('label', code, name).id
-        print('label:', code, name)
-
-        if has_video_record == False:
-            db_session.add(video)
-        db_session.commit()
+        #code, name = self.get_id_and_name(jacket_info('#video_label').find('.label'))
+        #video.label_id = self.create_item_record('label', code, name).id
+        #print('label:', code, name)
 
         #genres
-        print('genres')
-        jacket_info('#video_genres').find('.genre').each(self.iter_genres)
+        #print('genres')
+        #jacket_info('#video_genres').find('.genre').each(self.iter_genres)
 
         #actors
-        print('actors')
-        jacket_info('#video_cast').find('.cast').each(self.iter_actor)
+        #print('actors')
+        #jacket_info('#video_cast').find('.cast').each(self.iter_actor)
 
+        self.dao.commit()
         self.download_cover(jacket_info)
         self.redis.set(f'{self.url}:visited', 1)
 
