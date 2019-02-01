@@ -12,8 +12,6 @@ from models.video_genre import VideoGenre
 
 class VideoDAO:
 
-    is_new_video = False
-
     def __init__(self):
         Connection()
         self.session = Connection.session
@@ -27,15 +25,16 @@ class VideoDAO:
         print(code, name)
 
     def commit(self):
-        db_session.commit()
+        self.session.commit()
 
     def get_video(self, video_id):
         video = self.session.query(Video).filter_by(id=video_id).first()
+        return video
+
+    def add_if_not_exist(self, video_id):
+        video = self.get_video(video_id)
         if video == None:
-            video = Video(self.video_id, self.site_url, title, cover_url, release_date, video_length)
-            self.is_new_video = False
-        else:
-            self.is_new_video = True
+            video = Video(video_id)
         return video
 
     def iter_actor(self, index, node):
