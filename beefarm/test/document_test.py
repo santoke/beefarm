@@ -49,8 +49,8 @@ class DocumentTest(unittest.TestCase):
             self.assertNotEquals(self.document.redis.get(redis_key), None)
 
     def test_get_video_detail(self):
-        # todo
-        print('this is test video detail')
+        doc = self.document.pydoc('?v=javli7r65y')
+        self.document.get_video_detail(doc)
 
     # 비디오 상세 목업
     def _mock_get_video_detail(self, list_html='', force_raise=None):
