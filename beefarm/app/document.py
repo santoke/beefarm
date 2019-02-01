@@ -1,6 +1,7 @@
 from app.html_parser import HTMLParser
 from app.config import Config
 from pyquery import PyQuery as pq
+from app.video_page import VideoPage
 
 class Document(HTMLParser):
 
@@ -73,9 +74,8 @@ class Document(HTMLParser):
     def get_video_detail(self, list_html):
         for video_element in list_html('.videos').find('.video'):
             url = self.path_helper.make_sub_path(pq(video_element).find('a').attr('href'))
-            print(url)
-            pydoc = self.pydoc(url)
             if pydoc != None:
-                print('need to insert')
-                #doc = ModelHelper(pydoc, url)
-                #doc.start_parse()
+                page = VideoPage(url)
+                page.parse_data()
+                page.dao.commit()
+                page.redis.set(f'{page.url}:visited', 1)
